@@ -1,0 +1,21 @@
+{% extends "orders/layout.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <h1>Login</h1>
+        <form action="{% url 'login' %}"method="post">
+
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-dark">login</button>
+
+        </form>
+    </div>
+
+
+{% endblock %}
