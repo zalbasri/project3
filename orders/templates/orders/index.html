@@ -19,7 +19,15 @@
           <tbody>
             {% for sub in subs %}
             <tr>
-              <td>{{sub.name}}</td>
+              <td>
+                  {% if user.is_authenticated %}
+                  <a href="{% url 'sub' sub.id %}">
+                      {{sub.name}}
+                  </a>
+                  {% else %}
+                      {{sub.name}}
+                  {% endif %}
+              </td>
               <td>{{sub.price_small}}</td>
               <td>{{sub.price_large}}</td>
             </tr>
