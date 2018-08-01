@@ -6,7 +6,7 @@ from orders.forms import RegisterationForm
 
 from decimal import Decimal
 
-from .models import RegularPizza, SicilianPizza, Topping, Sub, Pasta, Salad, DinnerPlatter, Cart, Item
+from .models import RegularPizza, SicilianPizza, Topping, Sub, Pasta, Salad, DinnerPlatter, Cart
 
 # Create your views here.
 def index(request):
@@ -95,7 +95,7 @@ def add_sub(request, sub_id):
 
         cheese = request.POST["cheese"]
 
-        if cheese == 'with cheese':
+        if cheese == 'with extra cheese':
             price += Decimal(0.5)
 
         if sub_id == 10:
@@ -116,20 +116,197 @@ def add_sub(request, sub_id):
         return render(request, "orders/sub.html", {"message": "No sub."})
 
     user = request.user
-    item = Item.objects.create(name= sub.name + ' ' + size, price=price)
-    item.save()
 
-    try:
-        cart = Cart.objects.get(user=user)
-        print(cart)
-        cart.items.add(item)
-        print(cart)
-    except Cart.DoesNotExist:
-        cart = Cart.objects.create(user=user)
-        cart.save()
-        print(cart)
-        cart.items.set(item)
-        cart.save()
-        print(Cart)
+    cart = Cart.objects.create(user=user, name=sub.name + ' ' + size, price=price)
+
 
     return redirect('index')
+
+
+def cart_view(request):
+    user = request.user
+    context = {
+        "items": Cart.objects.filter(user=user).values()
+    }
+
+    return render(request, "orders/cart.html", context)
+
+
+def add_pasta(request):
+    try:
+        pasta_id = int(request.POST["pasta"])
+        pasta = Pasta.objects.get(pk = pasta_id)
+    except Pasta.DoesNotExist:
+        raise Http404("Pasta does not exist.")
+
+    user = request.user
+    cart = Cart.objects.create(user=user, name=pasta.name, price=pasta.price)
+
+    return redirect('index')
+
+
+def add_salad(request):
+    try:
+        salad_id = int(request.POST["salad"])
+        salad = Salad.objects.get(pk = salad_id)
+    except Salad.DoesNotExist:
+        raise Http404("Salad does not exist.")
+
+    user = request.user
+    cart = Cart.objects.create(user=user, name=salad.name, price=salad.price)
+
+    return redirect('index')
+
+
+def add_platter(request):
+    try:
+        platter_id = int(request.POST["dinner_platter"])
+        platter = DinnerPlatter.objects.get(pk = platter_id)
+        size = request.POST["size"]
+
+        if size == 'small':
+            price = platter.price_small
+
+        elif size == 'large':
+            price = platter.price_large
+
+    except DinnerPlatter.DoesNotExist:
+        raise Http404("Dinner platter does not exist.")
+
+    user = request.user
+    cart = Cart.objects.create(user=user, name=platter.name, price=price)
+
+    return redirect('index')
+
+
+def add_regular(request):
+    topping1 = request.POST["topping1"]
+    topping2 = request.POST["topping2"]
+    topping3 = request.POST["topping3"]
+    topping4 = request.POST["topping4"]
+    size = request.POST["size"]
+
+    name = ""
+    numToppings= 0
+    if topping1 != "no topping":
+        numToppings += 1
+        name += topping1
+
+    if topping2 != "no topping":
+        numToppings += 1
+        name += ", " + topping2
+
+    if topping3 != "no topping":
+        numToppings += 1
+        name += ", " + topping3
+
+    if topping4 != "no topping":
+        numToppings += 1
+        name += ", " + topping4
+
+    if numToppings != 0:
+        name = size + " regular pizza with " + name
+
+    else:
+        name = size + " regular cheese pizza"
+
+
+    if numToppings == 0:
+        pizza = RegularPizza.objects.get(name='Cheese')
+
+    elif numToppings == 1:
+        pizza = RegularPizza.objects.get(name='1 topping')
+
+    elif numToppings == 2:
+        pizza = RegularPizza.objects.get(name='2 toppings')
+
+    elif numToppings == 3:
+        pizza = RegularPizza.objects.get(name='3 toppings')
+
+    elif numToppings == 4:
+        pizza = RegularPizza.objects.get(name='Special')
+
+    if size == 'small':
+        price = pizza.price_large
+
+    elif size == 'large':
+        price = pizza.price_large
+
+
+    user = request.user
+    cart = Cart.objects.create(user=user, name=name, price=price)
+
+    return redirect('index')
+
+
+def add_sicilian(request):
+    topping1 = request.POST["topping1"]
+    topping2 = request.POST["topping2"]
+    topping3 = request.POST["topping3"]
+    topping4 = request.POST["topping4"]
+    size = request.POST["size"]
+
+    name = ""
+    numToppings= 0
+    if topping1 != "no topping":
+        numToppings += 1
+        name += topping1
+
+    if topping2 != "no topping":
+        numToppings += 1
+        name += ", " + topping2
+
+    if topping3 != "no topping":
+        numToppings += 1
+        name += ", " + topping3
+
+    if topping4 != "no topping":
+        numToppings += 1
+        name += ", " + topping4
+
+    if numToppings != 0:
+        name = size + " sicilian pizza with " + name
+
+    else:
+        name = size + " sicilian cheese pizza"
+
+
+    if numToppings == 0:
+        pizza = SicilianPizza.objects.get(name='Cheese')
+
+    elif numToppings == 1:
+        pizza = SicilianPizza.objects.get(name='1 topping')
+
+    elif numToppings == 2:
+        pizza = SicilianPizza.objects.get(name='2 toppings')
+
+    elif numToppings == 3:
+        pizza = SicilianPizza.objects.get(name='3 toppings')
+
+    elif numToppings == 4:
+        pizza = SicilianPizza.objects.get(name='Special')
+
+    if size == 'small':
+        price = pizza.price_large
+
+    elif size == 'large':
+        price = pizza.price_large
+
+
+    user = request.user
+    cart = Cart.objects.create(user=user, name=name, price=price)
+
+    return redirect('index')
+
+
+# def order(request):
+#     user = request.user
+#     items = Cart.objects.filter(user=user).values()
+#     total = 0
+#     for item in items:
+#         total = item.price
+#     context = {
+#         "items": items
+#         "total": total
+#     }
+#     return render(request, )

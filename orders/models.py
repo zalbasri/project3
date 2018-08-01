@@ -62,18 +62,10 @@ class DinnerPlatter(models.Model):
         return f"{self.name} {self.price_small} {self.price_large}"
 
 
-
-class Item(models.Model):
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=4, decimal_places=2)
 
     def __str__(self):
-        return f"{self.name} {self.price}"
-
-
-class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=False, null=False)
-    items = models.ManyToManyField(Item, blank=True)
-
-    def __str__(self):
-        return f"{self.user} {self.items}"
+        return f"{self.user} {self.name} {self.price}"

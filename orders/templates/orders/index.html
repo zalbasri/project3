@@ -6,6 +6,117 @@
 
 {% block body %}
 
+        <h1>Regular Pizza</h1>
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Small</th>
+              <th scope="col">Large</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for pizza in regular_pizzas %}
+            <tr>
+              <td>{{pizza.name}}</td>
+              <td>{{pizza.price_small}}</td>
+              <td>{{pizza.price_large}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h3>Choose toppings (or no toppings) and add to cart!</h3>
+        <form action="{% url 'add_regular' %}" method="post">
+          {% csrf_token %}
+        <select name="size">
+              <option value="small">small</option>
+              <option value="large">large</option>
+          </select>
+          <select name="topping1">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <select name="topping2">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <select name="topping3">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <select name="topping4">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <input type="submit" class="btn btn-dark" value="add to cart" />
+        </form>
+
+
+        <h1>Sicilian Pizza</h1>
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Small</th>
+              <th scope="col">Large</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for pizza in sicilian_pizzas %}
+            <tr>
+              <td>{{pizza.name}}</td>
+              <td>{{pizza.price_small}}</td>
+              <td>{{pizza.price_large}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h3>Choose toppings (or no toppings) and add to cart!</h3>
+        <form action="{% url 'add_sicilian' %}" method="post">
+          {% csrf_token %}
+        <select name="size">
+              <option value="small">small</option>
+              <option value="large">large</option>
+          </select>
+          <select name="topping1">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <select name="topping2">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <select name="topping3">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <select name="topping4">
+              <option value="no topping">no topping</option>
+              {% for topping in toppings %}
+                <option value="{{topping.name}}">{{topping.name}}</option>
+              {% endfor %}
+          </select>
+          <input type="submit" class="btn btn-dark" value="add to cart" />
+        </form>
+
     <h1>Subs</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -14,8 +125,8 @@
               <th scope="col">Small</th>
               <th scope="col">Large</th>
             </tr>
-
           </thead>
+
           <tbody>
             {% for sub in subs %}
             <tr>
@@ -43,8 +154,8 @@
               <th scope="col"></th>
               <th scope="col">Price</th>
             </tr>
-
           </thead>
+
           <tbody>
             {% for pasta in pastas %}
             <tr>
@@ -56,6 +167,16 @@
 
         </table>
 
+        <form action="{% url 'add_pasta' %}" method="post">
+          {% csrf_token %}
+          <select name="pasta">
+            {% for pasta in pastas %}
+            <option value="{{ pasta.id }}">{{ pasta.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="submit" class="btn btn-dark" value="add to cart" />
+        </form>
+
 
             <h1>Salads</h1>
         <table class="table">
@@ -64,8 +185,8 @@
               <th scope="col"></th>
               <th scope="col">Price</th>
             </tr>
-
           </thead>
+
           <tbody>
             {% for salad in salads %}
             <tr>
@@ -77,6 +198,16 @@
 
         </table>
 
+        <form action="{% url 'add_salad' %}" method="post">
+          {% csrf_token %}
+          <select name="salad">
+            {% for salad in salads %}
+            <option value="{{ salad.id }}">{{ salad.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="submit" class="btn btn-dark" value="add to cart" />
+        </form>
+
         <h1>Dinner Platters</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -85,8 +216,8 @@
               <th scope="col">Small</th>
               <th scope="col">Large</th>
             </tr>
-
           </thead>
+
           <tbody>
             {% for dinner_platter in dinner_platters %}
             <tr>
@@ -96,6 +227,21 @@
             </tr>
             {% endfor %}
           </tbody>
+        </table>
+
+        <form action="{% url 'add_platter' %}" method="post">
+          {% csrf_token %}
+          <select name="dinner_platter">
+            {% for dinner_platter in dinner_platters %}
+            <option value="{{ dinner_platter.id }}">{{ dinner_platter.name }}</option>
+            {% endfor %}
+          </select>
+          <select name="size">
+              <option value="small">small</option>
+              <option value="large">large</option>
+          </select>
+          <input type="submit" class="btn btn-dark" value="add to cart" />
+        </form>
 
 
 {% endblock %}
