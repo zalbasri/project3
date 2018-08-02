@@ -6,10 +6,12 @@ from orders.forms import RegisterationForm
 
 from decimal import Decimal
 
-from .models import RegularPizza, SicilianPizza, Topping, Sub, Pasta, Salad, DinnerPlatter, Cart
+from .models import RegularPizza, SicilianPizza, Topping, Sub, Pasta, Salad, DinnerPlatter, Cart, Order
 
-# Create your views here.
+# menu page
 def index(request):
+
+    # gets all the menu items from the database
     context = {
         "regular_pizzas": RegularPizza.objects.all(),
         "sicilian_pizzas": SicilianPizza.objects.all(),
@@ -22,55 +24,74 @@ def index(request):
     return render(request, "orders/index.html", context)
 
 
+# register view
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 def register(request):
     if request.method == 'POST':
+        # gets the filled registration form that's in the html
         form = RegisterationForm(request.POST)
         if form.is_valid():
             form.save()
+            # cleaned_data makes sure it doesn't have thing that could be harmful
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('index')
 
+    # if request method is get, sends an non-filled regestration form
     else:
         form = RegisterationForm()
 
-        args = {'form': form}
-        return render(request, 'orders/register.html', args)
+        context = {
+            'form': form
+        }
+        return render(request, 'orders/register.html', context)
 
 
+# logs the user in
 # https://www.youtube.com/watch?v=XMgF3JwKzgs
 def login_view(request):
     if request.method == 'POST':
+        # gets the filled login form from the html
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             return redirect('index')
+    # if request method is get, sends an non-filled login form
     else:
         form = AuthenticationForm()
-    return render(request, 'orders/login.html', {'form':form})
+
+    context = {
+        'form': form
+    }
+    return render(request, 'orders/login.html', context)
 
 
+# logs the user out & redirects to menu page
 def logout_view(request):
     logout(request)
     return redirect('index')
 
 
+# sends data for each sub in the sub's page
 def sub(request, sub_id):
     try:
+        # gets the sub with the requested id
         sub = Sub.objects.get(pk = sub_id)
     except Sub.DoesNotExist:
         raise Http404("Sub does not exist.")
 
+    # by default each sub doesn't have additional toppings and has a small size option
     toppings = False
     small = True
 
+    # if sub is Steak & Cheese, it has additional toppings
     if sub_id == 10:
         toppings = True
 
+    # if sub is Sausage, Peppers & Onions, it doesn't have a small option
     if sub_id == 11:
         small = False
 
@@ -82,6 +103,7 @@ def sub(request, sub_id):
     return render(request, "orders/sub.html", context)
 
 
+# gets the sub the user selected and adds it to their cart
 def add_sub(request, sub_id):
     try:
         size = request.POST["size"]
@@ -93,21 +115,29 @@ def add_sub(request, sub_id):
         elif size == 'large':
             price = sub.price_large
 
+        name = sub.name + ' ' + size
+
         cheese = request.POST["cheese"]
 
         if cheese == 'with extra cheese':
             price += Decimal(0.5)
+            name += ' ' + cheese
 
+
+        # is sub is Steak & Cheese check for extra toppings
         if sub_id == 10:
             mushrooms = request.POST["mushrooms"]
             if mushrooms == 'with mushrooms':
                 price += Decimal(0.5)
+                name += ' ' + mushrooms
             green_peppers = request.POST["green_peppers"]
             if green_peppers == 'with green peppers':
                 price += Decimal(0.5)
+                name += ' ' + green_peppers
             onions = request.POST["onions"]
             if onions == 'with onion':
                 price += Decimal(0.5)
+                name += ' ' + onions
 
 
     except KeyError:
@@ -117,7 +147,7 @@ def add_sub(request, sub_id):
 
     user = request.user
 
-    cart = Cart.objects.create(user=user, name=sub.name + ' ' + size, price=price)
+    cart = Cart.objects.create(user=user, name=name, price=price)
 
 
     return redirect('index')
@@ -125,10 +155,11 @@ def add_sub(request, sub_id):
 
 def cart_view(request):
     user = request.user
+    items = Cart.objects.filter(user=user).values()
     context = {
-        "items": Cart.objects.filter(user=user).values()
+        "items": items,
+        "exists": items.exists()
     }
-
     return render(request, "orders/cart.html", context)
 
 
@@ -174,7 +205,7 @@ def add_platter(request):
         raise Http404("Dinner platter does not exist.")
 
     user = request.user
-    cart = Cart.objects.create(user=user, name=platter.name, price=price)
+    cart = Cart.objects.create(user=user, name=platter.name + ' ' + size, price=price)
 
     return redirect('index')
 
@@ -275,13 +306,13 @@ def add_sicilian(request):
         pizza = SicilianPizza.objects.get(name='Cheese')
 
     elif numToppings == 1:
-        pizza = SicilianPizza.objects.get(name='1 topping')
+        pizza = SicilianPizza.objects.get(name='1 item')
 
     elif numToppings == 2:
-        pizza = SicilianPizza.objects.get(name='2 toppings')
+        pizza = SicilianPizza.objects.get(name='2 items')
 
     elif numToppings == 3:
-        pizza = SicilianPizza.objects.get(name='3 toppings')
+        pizza = SicilianPizza.objects.get(name='3 items')
 
     elif numToppings == 4:
         pizza = SicilianPizza.objects.get(name='Special')
@@ -299,14 +330,48 @@ def add_sicilian(request):
     return redirect('index')
 
 
-# def order(request):
-#     user = request.user
-#     items = Cart.objects.filter(user=user).values()
-#     total = 0
-#     for item in items:
-#         total = item.price
-#     context = {
-#         "items": items
-#         "total": total
-#     }
-#     return render(request, )
+def order(request):
+    total = 0
+    order_items = ""
+    user = request.user
+    items = Cart.objects.filter(user=user).values()
+    for item in items:
+        price = item['price']
+        name = item['name']
+        order_items += name + ' '
+        total += price
+
+    context = {
+        "items": items,
+        "total": total
+    }
+
+    return render(request, 'orders/order.html', context)
+
+
+def confirmation(request):
+    total = 0
+    order_items = ""
+    user = request.user
+    items = Cart.objects.filter(user=user).values()
+    for item in items:
+        price = item['price']
+        name = item['name']
+        order_items += name + ', '
+        total += price
+
+    order = Order.objects.create(user=user, items=order_items, total=total, status="pending")
+    cart = Cart.objects.filter(user=user).delete()
+
+    return redirect('index')
+
+
+def order_view(request):
+    user = request.user
+    orders = Order.objects.filter(user=user).values()
+    context = {
+        "orders": orders,
+        "exists": orders.exists()
+    }
+
+    return render(request, 'orders/orders.html', context)

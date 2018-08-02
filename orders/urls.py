@@ -13,5 +13,8 @@ urlpatterns = [
     path("add_salad", views.add_salad, name="add_salad"),
     path("add_platter", views.add_platter, name="add_platter"),
     path("add_regular", views.add_regular, name="add_regular"),
-    path("add_sicilian", views.add_sicilian, name="add_sicilian")
+    path("add_sicilian", views.add_sicilian, name="add_sicilian"),
+    path("order", views.order, name="order"),
+    path("confirmation", views.confirmation, name="confirmation"),
+    path("orders", views.order_view, name="orders")
 ]

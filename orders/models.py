@@ -69,3 +69,13 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"{self.user} {self.name} {self.price}"
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+    items = models.TextField()
+    total = models.DecimalField(max_digits=10000, decimal_places=2)
+    status = models.CharField(max_length=60)
+
+    def __str__(self):
+        return f"{self.user} {self.status} {self.total} {self.items}"
