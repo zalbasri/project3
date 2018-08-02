@@ -8,12 +8,16 @@
 
     <div class="container">
         <h1>Register</h1>
+        {% if msg %}
+            <div class="alert alert-danger" role="alert">
+                {{ msg }}
+            </div>
+        {% endif %}
         <form method="post">
-
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-dark">register</button>
-
+            {% csrf_token %}
+            <!--gets the registration form and displays it as paragraph-->
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-dark">register</button>
         </form>
     </div>
 

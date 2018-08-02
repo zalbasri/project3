@@ -1,11 +1,10 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from orders.forms import RegisterationForm
-
-from decimal import Decimal
-
+from django.contrib.auth.forms import AuthenticationForm #login form
+from orders.forms import RegisterationForm # registeration form created
+from decimal import Decimal # to calculate the prices in decimal
+# imports all the models
 from .models import RegularPizza, SicilianPizza, Topping, Sub, Pasta, Salad, DinnerPlatter, Cart, Order
 
 # menu page
@@ -38,6 +37,14 @@ def register(request):
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('index')
+
+        # if input is invalid
+        else:
+            context = {
+                'form': RegisterationForm(),
+                'msg': "please fill the requirements"
+            }
+            return render(request, 'orders/register.html', context)
 
     # if request method is get, sends an non-filled regestration form
     else:
@@ -145,16 +152,18 @@ def add_sub(request, sub_id):
     except Sub.DoesNotExist:
         return render(request, "orders/sub.html", {"message": "No sub."})
 
+    # gets the current user
     user = request.user
-
+    # adds item to cart
     cart = Cart.objects.create(user=user, name=name, price=price)
-
 
     return redirect('index')
 
 
+# renders the cart items to the html page
 def cart_view(request):
     user = request.user
+    # gets all the items in the cart model where the user is the current user
     items = Cart.objects.filter(user=user).values()
     context = {
         "items": items,
@@ -163,6 +172,7 @@ def cart_view(request):
     return render(request, "orders/cart.html", context)
 
 
+# gets the pasta the user selected and adds it to their cart
 def add_pasta(request):
     try:
         pasta_id = int(request.POST["pasta"])
@@ -176,6 +186,7 @@ def add_pasta(request):
     return redirect('index')
 
 
+# gets the salad the user selected and adds it to their cart
 def add_salad(request):
     try:
         salad_id = int(request.POST["salad"])
@@ -189,10 +200,12 @@ def add_salad(request):
     return redirect('index')
 
 
+# gets the dinner platter the user selected and adds it to their cart
 def add_platter(request):
     try:
         platter_id = int(request.POST["dinner_platter"])
         platter = DinnerPlatter.objects.get(pk = platter_id)
+        # gets the size the user selected
         size = request.POST["size"]
 
         if size == 'small':
@@ -210,6 +223,7 @@ def add_platter(request):
     return redirect('index')
 
 
+# gets the regular pizza the user selected and adds it to their cart
 def add_regular(request):
     topping1 = request.POST["topping1"]
     topping2 = request.POST["topping2"]
@@ -217,8 +231,13 @@ def add_regular(request):
     topping4 = request.POST["topping4"]
     size = request.POST["size"]
 
+    # name of the pizza
     name = ""
+    # tracks the number of toppings to calculate the price
     numToppings= 0
+
+    # checks the input for the topping selection and adds it to the pizza
+    # name if the input is not 'no topping'
     if topping1 != "no topping":
         numToppings += 1
         name += topping1
@@ -235,6 +254,7 @@ def add_regular(request):
         numToppings += 1
         name += ", " + topping4
 
+    # if the pizza has toppings it's not cheese pizza
     if numToppings != 0:
         name = size + " regular pizza with " + name
 
@@ -242,6 +262,7 @@ def add_regular(request):
         name = size + " regular cheese pizza"
 
 
+    # gets the pizza type depending on the number of toppings
     if numToppings == 0:
         pizza = RegularPizza.objects.get(name='Cheese')
 
@@ -270,6 +291,7 @@ def add_regular(request):
     return redirect('index')
 
 
+# gets the sicilian pizza the user selected and adds it to their cart
 def add_sicilian(request):
     topping1 = request.POST["topping1"]
     topping2 = request.POST["topping2"]
@@ -330,16 +352,18 @@ def add_sicilian(request):
     return redirect('index')
 
 
+# order page
 def order(request):
-    total = 0
-    order_items = ""
+    total = 0 # total price of order
+    order_items = "" # items in the cart
     user = request.user
     items = Cart.objects.filter(user=user).values()
+    # iterates through each item in the user's cart
     for item in items:
         price = item['price']
         name = item['name']
-        order_items += name + ' '
-        total += price
+        order_items += name + ' ' # adds each item's name to the order string
+        total += price # adds each item to the total
 
     context = {
         "items": items,
@@ -349,6 +373,7 @@ def order(request):
     return render(request, 'orders/order.html', context)
 
 
+# order is actually submitted
 def confirmation(request):
     total = 0
     order_items = ""
@@ -360,14 +385,18 @@ def confirmation(request):
         order_items += name + ', '
         total += price
 
+    # adds the order to the database, includes the user, the items ordered and the total
+    # default order status is pending
     order = Order.objects.create(user=user, items=order_items, total=total, status="pending")
     cart = Cart.objects.filter(user=user).delete()
 
     return redirect('index')
 
 
+# user can view all their orders
 def order_view(request):
     user = request.user
+    # gets all orders of the user
     orders = Order.objects.filter(user=user).values()
     context = {
         "orders": orders,

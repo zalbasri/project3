@@ -7,7 +7,9 @@
 {% block body %}
     <div class="container">
         <h1>Order</h1>
+        <!--if user has orders in history-->
         {% if exists %}
+            <!--iterate through orders-->
             {% for order in orders %}
                 <h3>Order: {{ order.items }}</h3>
                 <h3>Status: {{ order.status }}</h3>

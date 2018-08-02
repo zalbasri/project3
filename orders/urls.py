@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+# creates paths the user can access
 urlpatterns = [
     path("", views.index, name="index"),
     path("register", views.register, name="register"),

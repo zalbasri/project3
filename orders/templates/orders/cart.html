@@ -7,11 +7,13 @@
 {% block body %}
     <div class="container">
         <h1>Cart</h1>
+        <!--if cart is not empty iterate through items in cart-->
         {% if exists %}
             {% for item in items %}
                 <h3>Item: {{ item.name }}</h3>
                 <h3>Price: {{ item.price }}</h3>
             {% endfor %}
+            <!--button for redirecting to the order page-->
             <a href = "{% url 'order' %}" class="btn btn-dark" >order</a>
         {% else %}
             <h4>Your cart is empty.</h4>

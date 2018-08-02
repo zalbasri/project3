@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import RegularPizza, SicilianPizza, Topping, Sub, Pasta, Salad, DinnerPlatter, Cart, Order
 
-# Register your models here.
+# registers models for admin (superuser) access
 admin.site.register(RegularPizza)
 admin.site.register(SicilianPizza)
 admin.site.register(Topping)

@@ -6,15 +6,18 @@
 
 {% block body %}
 
-{% if message %}
-    {{ message }}
-{% endif %}
+    <!--for displaying error messages-->
+    {% if message %}
+        {{ message }}
+    {% endif %}
 
     <div class="container">
         <h2> {{ sub.name }} </h2>
+        <!--form for choosing toppings and size of the sub-->
         <form action="{% url 'add_sub' sub.id %}" method="post">
             {% csrf_token %}
             <select name="size">
+                <!--if sub has a small size option-->
                 {% if small %}
                     <option value="small">small</option>
                 {% endif %}
@@ -25,6 +28,7 @@
                 <option value="without extra cheese">without extra cheese</option>
             </select>
 
+            <!--in the case where additional toppings are allowed-->
             {% if toppings %}
                 <select name="mushrooms">
                     <option value="with mushrooms">with mushrooms</option>
@@ -39,6 +43,7 @@
                     <option value="without onions">without onions</option>
                 </select>
             {% endif %}
+            <!--button for adding to cart-->
             <input type="submit" class="btn btn-dark" value="add to cart" />
         </form>
     </div>

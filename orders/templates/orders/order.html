@@ -7,12 +7,14 @@
 {% block body %}
     <div class="container">
         <h1>Order</h1>
+        <!--shows items in cart rendered-->
         <h2>Items in your shopping cart:</h2>
             {% for item in items %}
                 <h3>Item: {{ item.name }}</h3>
                 <h3>Price: {{ item.price }}</h3>
             {% endfor %}
         <h3>total: {{ total }}</h3>
+        <!--button for confirming order-->
         <a href = "{% url 'confirmation' %}" class="btn btn-dark" >place order</a>
     </div>
 {% endblock %}

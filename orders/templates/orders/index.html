@@ -6,6 +6,7 @@
 
 {% block body %}
 
+        <!--table for regular pizzas-->
         <h1>Regular Pizza</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -16,6 +17,7 @@
             </tr>
           </thead>
 
+          <!--iterates all regular pizzas rendered from the index view-->
           <tbody>
             {% for pizza in regular_pizzas %}
             <tr>
@@ -27,6 +29,7 @@
           </tbody>
         </table>
 
+        <!--allow user to add pizza to cart if they are logged in-->
         {% if user.is_authenticated %}
 
           <h3>Choose toppings (or no toppings) and add to cart!</h3>
@@ -66,6 +69,7 @@
         {% endif %}
 
 
+        <!--table for Sicilian pizzas-->
         <h1>Sicilian Pizza</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -88,6 +92,7 @@
         </table>
 
 
+        <!--allow user to add pizza to cart if they are logged in-->
         {% if user.is_authenticated %}
           <h3>Choose toppings (or no toppings) and add to cart!</h3>
           <form action="{% url 'add_sicilian' %}" method="post">
@@ -125,6 +130,7 @@
         {% endif %}
 
 
+    <!--table for subs-->
     <h1>Subs</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -139,6 +145,7 @@
             {% for sub in subs %}
             <tr>
               <td>
+                  <!--only shows the link if user is logged in-->
                   {% if user.is_authenticated %}
                   <a href="{% url 'sub' sub.id %}">
                       {{sub.name}}
@@ -155,6 +162,13 @@
 
         </table>
 
+        <!--only shows the add to cart message if user is logged in-->
+        {% if user.is_authenticated %}
+          <h3>click on any of the sub names to add to cart!</h3>
+        {% endif %}
+
+
+        <!--table for pastas-->
         <h1>Pastas</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -176,6 +190,7 @@
         </table>
 
 
+        <!--shows option to add pasta to cart if user is logged in-->
         {% if user.is_authenticated %}
           <form action="{% url 'add_pasta' %}" method="post">
             {% csrf_token %}
@@ -189,7 +204,8 @@
         {% endif %}
 
 
-            <h1>Salads</h1>
+        <!--table for salads-->
+        <h1>Salads</h1>
         <table class="table">
           <thead class="thead-dark">
             <tr>
@@ -209,6 +225,8 @@
 
         </table>
 
+
+        <!--shows option to add salad to cart if user is logged in-->
         {% if user.is_authenticated %}
           <form action="{% url 'add_salad' %}" method="post">
             {% csrf_token %}
@@ -221,6 +239,8 @@
           </form>
         {% endif %}
 
+
+        <!--table for dinner platters-->
         <h1>Dinner Platters</h1>
         <table class="table">
           <thead class="thead-dark">
@@ -243,6 +263,7 @@
         </table>
 
 
+        <!--shows the option to add dinner platter to cart if user is logged in-->
         {% if user.is_authenticated %}
           <form action="{% url 'add_platter' %}" method="post">
             {% csrf_token %}

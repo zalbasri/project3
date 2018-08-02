@@ -11,6 +11,7 @@
         <form action="{% url 'login' %}"method="post">
 
                 {% csrf_token %}
+                <!--gets the login form and displays its as paragraph-->
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-dark">login</button>
 
